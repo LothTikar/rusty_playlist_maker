@@ -19,9 +19,9 @@ fn main() {
     for row in playlists_src.records() {
         if let Ok(row) = row {
             let mut link = String::new();
-            let mut dislikes = String::new();
             let mut playlist_names: Vec<String> = Vec::new();
-            let mut put_on_autoplaylist = false;
+            let mut add_to_autoplaylist = false;
+            let mut remove_from_autoplaylist = false;
 
             for i in 0..row.len() {
                 if row[i].is_empty() {
@@ -29,16 +29,9 @@ fn main() {
                 }
                 match header[i].as_ref() {
                     "Youtube link" => link = row[i].to_string(),
-                    "Who dislikes this song?" => dislikes = row[i].to_string(),
-                    "Game" => {
-                        for name in row[i].to_string().split(',') {
-                            playlist_names.push(format!("{} - {}", header[i].to_string(), name))
-                        }
-                        if row.get(i).unwrap() == "RuneScape" {
-                            put_on_autoplaylist = true;
-                        }
-                    }
                     "Song Name" => (),
+                    "Add to Autoplaylist" => add_to_autoplaylist = true,
+                    "Remove from Autoplaylist" => remove_from_autoplaylist = true,
                     _ => {
                         for name in row[i].to_string().split(',') {
                             playlist_names.push(format!("{} - {}", header[i].to_string(), name))
@@ -47,7 +40,7 @@ fn main() {
                 }
             }
 
-            if put_on_autoplaylist && dislikes.is_empty() {
+            if add_to_autoplaylist && !remove_from_autoplaylist {
                 autoplaylist.push(link.clone());
             }
 
